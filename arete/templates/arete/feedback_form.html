@@ -1,0 +1,13 @@
+{% extends "arete/base.html" %}
+
+{% block title %}Leave feedback{% endblock %}
+
+{% block content %}
+<h1>Leave feedback</h1>
+<p>For {{ offering }}</p>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Send feedback">
+</form>
+{% endblock %}

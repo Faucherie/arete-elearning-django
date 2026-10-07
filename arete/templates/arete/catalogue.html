@@ -1,0 +1,35 @@
+{% extends "arete/base.html" %}
+
+{% block title %}Catalogue{% endblock %}
+
+{% block content %}
+<h1>Catalogue</h1>
+
+<table class="table">
+  <tr><th>Course</th><th>Term</th><th>Teacher</th><th></th></tr>
+  {% for offering in offerings %}
+  <tr>
+    <td><strong>{{ offering.course.code }}</strong> {{ offering.course.title }}<br>
+        {{ offering.course.description|default:"" }}</td>
+    <td>{{ offering.term }}</td>
+    <td><a href="{% url 'user_home' offering.teacher.pk %}">{{ offering.teacher.get_full_name|default:offering.teacher.username }}</a></td>
+    <td>
+      {% if offering.teacher == user %}
+      <a href="{% url 'offering_detail' offering.pk %}">Your offering</a>
+      {% elif offering.pk in active_ids %}
+      <a href="{% url 'offering_detail' offering.pk %}">Enrolled</a>
+      {% elif offering.pk in blocked_ids %}
+      Blocked
+      {% elif perms.arete.add_enrolment %}
+      <form method="post" action="{% url 'enrol' offering.pk %}">
+        {% csrf_token %}
+        <input type="submit" value="Enrol" class="btn btn-primary btn-sm">
+      </form>
+      {% endif %}
+    </td>
+  </tr>
+  {% empty %}
+  <tr><td colspan="4">No offerings yet.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

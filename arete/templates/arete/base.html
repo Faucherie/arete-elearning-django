@@ -1,0 +1,25 @@
+{% load bootstrap4 %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Arete{% endblock %}</title>
+    {% bootstrap_css %}
+    {% bootstrap_javascript jquery='full' %}
+    <link rel="stylesheet" type="text/css" href="{% static 'arete/arete.css' %}">
+</head>
+<body>
+
+{% include "arete/title.html" %}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12" id="content">
+            {% block content %}Didn't render content{% endblock %}
+        </div>
+    </div>
+</div>
+
+{% include "arete/footer.html" %}

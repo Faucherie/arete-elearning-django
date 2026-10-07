@@ -1,0 +1,126 @@
+{% extends "arete/base.html" %}
+
+{% block title %}{{ profile_user.username }}{% endblock %}
+
+{% block content %}
+
+<div class="welcome">
+  <div class="names">
+    {% if profile_user == user %}
+    <h1>Hello {{ profile_user.username }}</h1>
+    {% else %}
+    <h1>{{ profile_user.username }}</h1>
+    {% endif %}
+    <b>{{ profile_user.get_full_name }}</b>
+  </div>
+
+  <div class="profile-photo">
+    {% if profile_user.appuser.photo %}
+    <img src="{{ profile_user.appuser.photo.url }}" alt="profile photo" width="120">
+    {% endif %}
+  </div>
+</div>
+
+<div class="user-search">
+  {% if results is not None %}
+  <h2>Find students and teachers</h2>
+  <form method="get" action="{% url 'home' %}">
+      <input type="text" name="q" value="{{ query }}" placeholder="Username or name">
+      <input type="submit" value="Search" class="btn btn-primary btn-sm">
+  </form>
+  {% if query %}
+  <ul>
+    {% for person in results %}
+    <li><a href="{% url 'user_home' person.pk %}">{{ person.username }}</a> {{ person.get_full_name }}</li>
+    {% empty %}
+    <li>No one matches "{{ query }}".</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% endif %}
+</div>
+
+{% if notifications is not None %}
+<div class="notifications">
+  <h2>Notifications{% if unread_count %} ({{ unread_count }} new){% endif %}</h2>
+  {% if unread_count %}
+  <form method="post" action="{% url 'notifications_read' %}">
+      {% csrf_token %}
+      <input type="submit" value="Mark all as read" class="btn btn-outline-secondary btn-sm">
+  </form>
+  {% endif %}
+  <ul>
+    {% for notification in notifications %}
+    <li>{% if not notification.is_read %}<strong>{% endif %}<a href="{{ notification.url }}">{{ notification.message }}</a>{% if not notification.is_read %}</strong>{% endif %} ({{ notification.created_at|date:"j M Y" }})</li>
+    {% empty %}
+    <li>No notifications.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+<div class="courses">
+  {% if profile_is_teacher %}<h2>Courses taught</h2>
+  {% else %}<h2>Enrolled courses</h2>{% endif %}
+
+  <table class="table roster">
+    <tr><th>Course</th><th>Term</th><th>Teacher</th><th>Link</th></tr>
+    {% for offering in offerings %}
+    <tr>
+      <td>{{ offering.course.title }}</td>
+      <td>{{ offering.term }}</td>
+      <td><a href="{% url 'user_home' offering.teacher.pk %}">{{ offering.teacher.username }}</a></td>
+      <td><a href="{% url 'offering_detail' offering.pk %}">Detail Page</a></td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="3">Nothing here yet.</td></tr>
+    {% endfor %}
+  </table>
+</div>
+
+<div class="deadlines">
+  {% if deadlines is not None and profile_user == user %}
+  <h2>Upcoming deadlines</h2>
+  <ul>
+    {% for assignment in deadlines %}
+    <li>{{ assignment.due_date|date:"j M Y" }}: {{ assignment.title }}</li>
+    {% empty %}
+    <li>Nothing due.</li>
+    {% endfor %}
+  </ul>
+
+  <h3>Past deadlines</h3>
+  <ul>
+    {% for assignment in past_deadlines %}
+    <li>{{ assignment.due_date|date:"j M Y" }}: {{ assignment.title }}</li>
+    {% empty %}
+    <li>None yet.</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+</div>
+
+<div class="status-updates">
+  <h2>Status updates</h2>
+
+  <b>Write an blog post</b>
+  {% if status_form %}
+  <form method="post" action="{% url 'status_create' %}">
+      {% csrf_token %}
+      {{ status_form.as_p }}
+      <input type="submit" value="Post" class="btn btn-primary btn-sm">
+  </form>
+  {% endif %}
+
+  <b>Past posts</b>
+  <ul>
+    {% for update in updates %}
+     <li>{{ update.posted_at|date:"j M Y" }}: {{ update.body }}{% if update.offering %} ({{ update.offering }}){% endif %}</li>
+    {% empty %}
+    <li>Nothing posted yet.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
+

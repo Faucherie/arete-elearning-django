@@ -1,0 +1,16 @@
+{% extends "arete/base.html" %}
+
+{% block title %}Teaching{% endblock %}
+
+{% block content %}
+<h1>Courses you teach</h1>
+<p><a href="{% url 'offering_create' %}" class="btn btn-primary btn-sm">New offering</a>
+   <a href="{% url 'course_create' %}" class="btn btn-outline-primary btn-sm">New course</a></p>
+<ul>
+{% for offering in offerings %}
+    <li><a href="{% url 'offering_detail' offering.pk %}">{{ offering }}</a></li>
+{% empty %}
+    <li>You are not teaching anything yet.</li>
+{% endfor %}
+</ul>
+{% endblock %}

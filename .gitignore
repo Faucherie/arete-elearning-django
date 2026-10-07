@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+venv/
+.venv/
+.ipynb_checkpoints/
+db.sqlite3
+media/
+node_modules/
+build/
+*.o
+.env

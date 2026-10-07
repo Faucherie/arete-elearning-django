@@ -1,0 +1,23 @@
+<nav class="navbar navbar-expand-md sticky-top flex-column">
+    <div class="w-100 d-flex">
+        <div class="navbar-header" id="header">
+            <a class="navbar-brand" href="{% url 'index' %}">Arete</a>
+        </div>
+    </div>
+
+    <div class="w-100 d-flex">
+        <ul class="navbar-nav mr-auto" id="navigation">
+            {% if user.is_authenticated %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'catalogue' %}">Catalogue</a></li>
+            {% if perms.arete.add_offering %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'teacher_dashboard' %}">Teaching</a></li>
+            {% endif %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Log out</a></li>
+            {% else %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Register</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Log in</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>

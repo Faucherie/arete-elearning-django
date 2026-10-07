@@ -1,0 +1,74 @@
+{% extends "arete/base.html" %}
+
+{% block title %}{{ offering }}{% endblock %}
+
+{% block content %}
+<h1>{{ offering.course.code }} {{ offering.course.title }}</h1>
+<p>{{ offering.term }}, taught by
+   <a href="{% url 'user_home' offering.teacher.pk %}">{{ offering.teacher.get_full_name|default:offering.teacher.username }}</a></p>
+<p>{{ offering.course.description|default:"" }}</p>
+
+<p><a href="{% url 'room' chat_room %}" class="btn btn-outline-primary btn-sm">Course chat</a></p>
+
+<h2>Materials</h2>
+{% if offering.teacher == user %}
+<p><a href="{% url 'material_create' offering.pk %}" class="btn btn-primary btn-sm">Upload material</a></p>
+{% endif %}
+<ul>
+  {% for material in materials %}
+  <li><a href="{{ material.file.url }}">{{ material.title }}</a> ({{ material.uploaded_at|date:"j M Y" }})</li>
+  {% empty %}
+  <li>No materials yet.</li>
+  {% endfor %}
+</ul>
+
+<h2>Feedback</h2>
+{% if can_leave_feedback %}
+<p><a href="{% url 'feedback_create' offering.pk %}" class="btn btn-primary btn-sm">Leave feedback</a></p>
+{% endif %}
+<ul>
+  {% for item in feedback %}
+  <li>{% if item.rating %}{{ item.rating }}/5: {% endif %}{{ item.comment }}{% if is_owner %} ({{ item.student.username }}){% endif %}</li>
+  {% empty %}
+  <li>No feedback yet.</li>
+  {% endfor %}
+</ul>
+
+{% if is_owner %}
+<h2>Students</h2>
+<table class="table roster">
+  <tr><th>Student</th><th>Status</th><th></th></tr>
+  {% for enrolment in roster %}
+  <tr>
+    <td><a href="{% url 'user_home' enrolment.student.pk %}">{{ enrolment.student.username }}</a></td>
+    <td>{{ enrolment.get_status_display }}</td>
+    <td>
+      {% if enrolment.status != "REMOVED" %}
+      <form method="post" action="{% url 'enrolment_status' enrolment.pk %}" class="d-inline">
+        {% csrf_token %}
+        <input type="hidden" name="status" value="REMOVED">
+        <input type="submit" value="Remove" class="btn btn-outline-secondary btn-sm">
+      </form>
+      {% endif %}
+      {% if enrolment.status != "BLOCKED" %}
+      <form method="post" action="{% url 'enrolment_status' enrolment.pk %}" class="d-inline">
+        {% csrf_token %}
+        <input type="hidden" name="status" value="BLOCKED">
+        <input type="submit" value="Block" class="btn btn-outline-danger btn-sm">
+      </form>
+      {% endif %}
+      {% if enrolment.status != "ACTIVE" %}
+      <form method="post" action="{% url 'enrolment_status' enrolment.pk %}" class="d-inline">
+        {% csrf_token %}
+        <input type="hidden" name="status" value="ACTIVE">
+        <input type="submit" value="Restore" class="btn btn-outline-primary btn-sm">
+      </form>
+      {% endif %}
+    </td>
+  </tr>
+  {% empty %}
+  <tr><td colspan="3">No students yet.</td></tr>
+  {% endfor %}
+</table>
+{% endif %}
+{% endblock %}

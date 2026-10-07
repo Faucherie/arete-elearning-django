@@ -1,0 +1,16 @@
+{% extends "arete/base.html" %}
+
+{% block title %}Arete{% endblock %}
+
+{% block content %}
+
+<h2>Courses</h2>
+<ul>
+  {% for course in courses %}
+  <li><strong>{{ course.code }}</strong> {{ course.title }}<br />
+      {{ course.description }}</li>
+  {% empty %}
+  <li>No courses yet.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "arete/base.html" %}
+
+{% block title %}New offering{% endblock %}
+
+{% block content %}
+<h1>New offering</h1>
+<p>Course not listed? <a href="{% url 'course_create' %}">Add a course</a> first.</p>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Create offering">
+</form>
+{% endblock %}

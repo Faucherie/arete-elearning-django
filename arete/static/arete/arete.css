@@ -1,0 +1,21 @@
+.nav-link {
+    color: white;
+}
+
+.navbar {
+    padding: 0px;
+    background-color: #343a40;
+}
+
+.navbar-brand {
+    color: white;
+}
+
+#content {
+    padding: 1rem;
+}
+
+.error {
+    color: #a00;
+    font-weight: bold;
+}
